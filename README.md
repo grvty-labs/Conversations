@@ -1,12 +1,16 @@
-**Conversations**
-==============
+**Conversations for React Native**
+==================================
 [![License: MIT][license-shield]][license]
 
-A reusable React Native chat. This project development has the assumption that Phoenix Framework is in the back-end. Later in time this project's intention is to be as generic as possible (we are going to use websockets after all).  
+A reusable React Native chat. This project development has the assumption that Phoenix Framework is in the back-end. Later in time this project's intention is to be as generic as possible (we are going to use websockets after all).
+
+This package considers the use of redux and some middleware to make the some of the requests, but it's not restrictive to redux. In fact, you can delegate all the requests code to the components and focus on integrating the websockets inside your back-end, but in either way we still recommend you to look into some of the code executed inside the components for future reference or to raise an issue inside our Github.
+
+We love the documentation, so don't be afraid to check our code or our wiki (coming soon).
+
 
 Owned and Developed by
 --------
-
 
 [![StackShare][stack-shield]][stack-tech]
 
