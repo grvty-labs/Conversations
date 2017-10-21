@@ -25,6 +25,8 @@ export type ListActionPropTypes = {
 export type ChannelUser = {
   userId: number | string,
   name: string,
+  initials?: string,
+  color?: string,
   imageUrl?: string,
   subtitle?: string,
 }
@@ -34,12 +36,14 @@ export type ChannelMessage = {
   attachmentUrl?: string,
   text: string,
   date: string,
+  dateObj?: Date,
   userId: number | string,
 };
 
 export type ChannelStorePropTypes = {
   myUserId: number | string,
-  defaultUserImage?: string,
+  systemUserId?: number | string,
+  inputbarStyle?: ViewPropTypes.style,
   style?: ViewPropTypes.style,
 };
 export type ChannelActionPropTypes = {
