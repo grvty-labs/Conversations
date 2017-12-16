@@ -11,14 +11,21 @@ import SendIcon from '../../assets/svgSendIcon';
 import defaultStyle, { fallbackStyle } from '../../styles/inputbar';
 
 type Props = {
+  actionIcon?: React.Node,
+  sendIcon?: React.Node,
   showSend?: boolean,
   text: string,
   style?: ViewPropTypes.style,
   onChangeText: Function,
+  extraAction?: Function, // The action to be executed from the action Button
+  sendAction: Function, // The send Action
 };
 type Default = {
   showSend: boolean,
   style: ViewPropTypes.style,
+  actionIcon?: React.Node,
+  sendIcon?: React.Node,
+  sendAction: Function,
 };
 type State = {
   showExtraIcons: boolean,
@@ -29,6 +36,9 @@ export default class Inputbars extends React.Component<Default, Props, State> {
   static defaultProps: Default = {
     showSend: true,
     style: defaultStyle,
+    actionIcon: <SendIcon />,
+    sendIcon: <SendIcon />,
+    sendAction: () => {},
   };
 
   constructor(props: Props) {
@@ -50,6 +60,7 @@ export default class Inputbars extends React.Component<Default, Props, State> {
    * @returns {any} A React View instance
    */
   renderInputIcons() {
+    const { actionIcon, extraAction } = this.props;
     const { showExtraIcons } = this.state;
 
     if (!showExtraIcons) {
@@ -57,9 +68,9 @@ export default class Inputbars extends React.Component<Default, Props, State> {
         <View style={this.style.iconButtonWrapper}>
           <TouchableOpacity
             style={[this.style.iconButtonWrapper, this.style.openExtraIconsButtonIconWrapper]}
-            onPress={() => this.setState({ showExtraIcons: !showExtraIcons })}
+            onPress={() => extraAction || this.setState({ showExtraIcons: !showExtraIcons })}
           >
-            <SendIcon />
+            {actionIcon}
           </TouchableOpacity>
         </View>
       );
@@ -68,7 +79,7 @@ export default class Inputbars extends React.Component<Default, Props, State> {
       <View style={this.style.iconButtonWrapper}>
         <TouchableOpacity
           style={[this.style.iconButtonWrapper, this.style.openExtraIconsButtonIconWrapper]}
-          onPress={() => this.setState({ showExtraIcons: !showExtraIcons })}
+          onPress={extraAction}
         >
           <SendIcon />
         </TouchableOpacity>
@@ -83,6 +94,7 @@ export default class Inputbars extends React.Component<Default, Props, State> {
   }
 
   render() {
+    const { sendIcon, sendAction } = this.props;
     return (
       <View style={this.style.wrapper}>
         { this.renderInputIcons() }
@@ -91,15 +103,16 @@ export default class Inputbars extends React.Component<Default, Props, State> {
           style={this.style.input}
           onChangeText={this.props.onChangeText}
           value={this.props.text}
-          placeholder={'Write your message...'}
+          placeholder={'Escribe tu mensaje...'}
           placeholderColor={'#797979'}
         />
         <TouchableOpacity style={[
           this.style.iconButtonWrapper,
           this.style.sendButtonIconWrapper,
           this.props.showSend ? { width: 40 } : { width: 0 }]}
+          onPress={sendAction}
         >
-          <SendIcon />
+          {sendIcon}
         </TouchableOpacity>
       </View>
     );

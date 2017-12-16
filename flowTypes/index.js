@@ -1,4 +1,5 @@
 // @flow
+import * as React from 'react';
 import { ViewPropTypes } from 'react-native';
 
 export type ListItemPropTypes = {
@@ -45,7 +46,10 @@ export type ChannelStorePropTypes = {
   systemUserId?: number | string,
   inputbarStyle?: ViewPropTypes.style,
   style?: ViewPropTypes.style,
+  actionIcon?: React.Node,
+  sendIcon?: React.Node,
+  messageStyle?: ViewPropTypes.style,
 };
 export type ChannelActionPropTypes = {
-
+  extraAction?: Function,
 };

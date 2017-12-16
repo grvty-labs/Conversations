@@ -47,7 +47,7 @@ export default class Message extends React.PureComponent<Default, Props, State> 
     return (
       <View style={this.style.messageRow}>
         <View style={[this.style.messageBase, this.style.messageFromSystem]}>
-          <Text style={{ color: '#000000', textAlign: 'center' }}>{ item.text }</Text>
+          <Text style={[this.style.textMessage, this.style.systemText]}>{ item.text }</Text>
         </View>
       </View>
     );
@@ -90,7 +90,9 @@ export default class Message extends React.PureComponent<Default, Props, State> 
             this.style.messageBase,
             isMine ? this.style.messageFromMe : this.style.messageFromOther]}
         >
-          <Text style={isMine ? { color: '#ffffff' } : { color: '#000000' }}>
+          <Text
+            style={[this.style.textMessage, isMine ? this.style.userText : this.style.otherText]}
+          >
             { item.text }
           </Text>
         </View>
