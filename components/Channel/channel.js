@@ -182,7 +182,7 @@ export default class Channel extends React.Component<Default, Props, State> {
    * and the users' messages as separated and clean as possible.
    */
   renderMessage(itemData: { item: ChannelMessage }) {
-    const { myUserId, systemUserId } = this.props;
+    const { myUserId, systemUserId, messageStyle } = this.props;
     const item = itemData.item;
     const user = this.state.users[item.userId] || {
       userId: 0,
@@ -190,7 +190,15 @@ export default class Channel extends React.Component<Default, Props, State> {
       initials: '?',
       color: '#6f8eb4',
     };
-    return <Message myUserId={myUserId} systemUserId={systemUserId} item={item} user={user} />;
+    return (
+      <Message
+        style={messageStyle}
+        myUserId={myUserId}
+        systemUserId={systemUserId}
+        item={item}
+        user={user}
+      />
+    );
   }
 
   /*
@@ -211,7 +219,7 @@ export default class Channel extends React.Component<Default, Props, State> {
 
   render() {
     const { text } = this.state;
-    const { inputbarStyle } = this.props;
+    const { inputbarStyle, actionIcon, sendIcon, extraAction } = this.props;
     return (
       <View style={this.style.wrapper}>
         <FlatList
@@ -234,6 +242,9 @@ export default class Channel extends React.Component<Default, Props, State> {
           onChangeText={txt => this.setState({ text: txt })}
           text={text}
           style={inputbarStyle}
+          actionIcon={actionIcon}
+          sendIcon={sendIcon}
+          extraAction={extraAction}
         />
       </View>
     );
