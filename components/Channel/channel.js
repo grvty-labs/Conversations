@@ -3,8 +3,6 @@ import * as React from 'react';
 import {
   ActivityIndicator,
   FlatList,
-  Image,
-  Text,
   View,
   ViewPropTypes,
 } from 'react-native';
@@ -13,6 +11,7 @@ import { getNameInitials, getNameColor } from '../../utils/userIconGenerator';
 import Inputbar from './inputbar';
 import Message from './message';
 import defaultStyle, { fallbackStyle } from '../../styles/Channel';
+import ImageGallery from '@expo/react-native-image-gallery';
 import type {
   ChannelStorePropTypes,
   ChannelActionPropTypes,
@@ -63,7 +62,6 @@ export default class Channel extends React.Component<Default, Props, State> {
     messages: [],
     users: {},
     refreshing: false,
-    text: '',
   };
 
   componentDidMount() {
@@ -88,22 +86,6 @@ export default class Channel extends React.Component<Default, Props, State> {
     if (!this.state.refreshing) {
       this.setState({ refreshing: true }, () => {
         const msgsFetched: Array<ChannelMessage> = [
-          { id: 13, attachmentUrl: '', text: 'We need to make all the styling replazable, and all the documentation', date: '2017', userId: 1 },
-          { id: 12, attachmentUrl: '', text: 'Maybe... 3 weeks? I am still fighting with the "generic" part', date: '2017', userId: 1 },
-          { id: 11, attachmentUrl: '', text: 'I still don\'t know, but I think it will be done soon', date: '2017', userId: 1 },
-          { id: 10, attachmentUrl: '', text: 'When is it going to be released?', date: '2017', userId: 2 },
-          { id: 9, attachmentUrl: '', text: 'Woooow!!! Congratulations!!!', date: '2017', userId: 2 },
-          { id: 8, attachmentUrl: '', text: 'And it is going to be available for  React and React Native!!', date: '2017', userId: 1 },
-          { id: 7, attachmentUrl: '', text: 'I have always wanted to build one!', date: '2017', userId: 1 },
-          { id: 6, attachmentUrl: '', text: 'It is goddamn awesome! I am building a generic chat interface!', date: '2017', userId: 1 },
-          { id: 5.5, attachmentUrl: '', text: 'Updated internals', date: '2017', userId: 0 },
-          { id: 5, attachmentUrl: '', text: 'How is life treating you?', date: '2017', userId: 2 },
-          { id: 4, attachmentUrl: '', text: 'Awesome and you?', date: '2017', userId: 2 },
-          { id: 3, attachmentUrl: '', text: 'How have you been?', date: '2017', userId: 1 },
-          { id: 2, attachmentUrl: '', text: 'Hi my friend!!!', date: '2017', userId: 2 },
-          { id: 1, attachmentUrl: '', text: 'Hello', date: '2017', userId: 1 },
-          { id: 0.5, attachmentUrl: '', text: 'You are connected again', date: '2017', userId: 0 },
-          { id: 0, attachmentUrl: '', text: 'You are now connected', date: '2017', userId: 0 },
         ];
 
         const msgsClean = msgsFetched.map(msg => ({ ...msg, dateObj: new Date() }));
@@ -182,7 +164,7 @@ export default class Channel extends React.Component<Default, Props, State> {
    * and the users' messages as separated and clean as possible.
    */
   renderMessage(itemData: { item: ChannelMessage }) {
-    const { myUserId, systemUserId, messageStyle } = this.props;
+    const { myUserId, systemUserId, messageStyle, messages } = this.props;
     const item = itemData.item;
     const user = this.state.users[item.userId] || {
       userId: 0,
@@ -196,6 +178,7 @@ export default class Channel extends React.Component<Default, Props, State> {
         myUserId={myUserId}
         systemUserId={systemUserId}
         item={item}
+        list={messages}
         user={user}
       />
     );
@@ -218,13 +201,13 @@ export default class Channel extends React.Component<Default, Props, State> {
   }
 
   render() {
-    const { text } = this.state;
-    const { inputbarStyle, actionIcon, sendIcon, extraAction } = this.props;
+    const { inputbarStyle, actionIcon, sendIcon,
+      extraAction, messages, onSend, imageSelected } = this.props;
     return (
       <View style={this.style.wrapper}>
         <FlatList
           style={this.style.listWrapper}
-          data={this.state.messages}
+          data={messages}
           extraData={this.state.users}
           keyExtractor={this.keyExtractor}
           renderItem={this.renderMessage}
@@ -238,14 +221,14 @@ export default class Channel extends React.Component<Default, Props, State> {
 
         />
         <Inputbar
-          showSend={!!text}
-          onChangeText={txt => this.setState({ text: txt })}
-          text={text}
           style={inputbarStyle}
           actionIcon={actionIcon}
           sendIcon={sendIcon}
           extraAction={extraAction}
+          sendAction={onSend}
+          imageSelected={imageSelected}
         />
+        <ImageGallery />
       </View>
     );
   }

@@ -5,20 +5,21 @@ import {
   TouchableOpacity,
   View,
   ViewPropTypes,
+  Text,
+  Image,
+  KeyboardAvoidingView,
 } from 'react-native';
-
+import { em } from '../../styles';
 import SendIcon from '../../assets/svgSendIcon';
 import defaultStyle, { fallbackStyle } from '../../styles/inputbar';
 
 type Props = {
   actionIcon?: React.Node,
   sendIcon?: React.Node,
-  showSend?: boolean,
-  text: string,
   style?: ViewPropTypes.style,
-  onChangeText: Function,
   extraAction?: Function, // The action to be executed from the action Button
   sendAction: Function, // The send Action
+  imageSelected: string,
 };
 type Default = {
   showSend: boolean,
@@ -26,9 +27,11 @@ type Default = {
   actionIcon?: React.Node,
   sendIcon?: React.Node,
   sendAction: Function,
+  imageSelected: string,
 };
 type State = {
   showExtraIcons: boolean,
+  text: string,
 };
 
 export default class Inputbars extends React.Component<Default, Props, State> {
@@ -39,11 +42,13 @@ export default class Inputbars extends React.Component<Default, Props, State> {
     actionIcon: <SendIcon />,
     sendIcon: <SendIcon />,
     sendAction: () => {},
+    imageSelected: '',
   };
 
   constructor(props: Props) {
     super(props);
     (this: any).renderInputIcons = this.renderInputIcons.bind(this);
+    (this: any).onImageSelectedfocusInput = this.onImageSelectedfocusInput.bind(this);
     this.style = {  // For flow and to prevent 'undefined key' issues
       ...fallbackStyle,
       ...props.style,
@@ -52,7 +57,12 @@ export default class Inputbars extends React.Component<Default, Props, State> {
 
   state: State = {
     showExtraIcons: false,
+    text: '',
   };
+
+  componentWillReceiveProps(nextProps: Object) {
+    this.onImageSelectedfocusInput(nextProps);
+  }
 
   /*
    * Function to render the footer of the Channel. In this section
@@ -68,7 +78,8 @@ export default class Inputbars extends React.Component<Default, Props, State> {
         <View style={this.style.iconButtonWrapper}>
           <TouchableOpacity
             style={[this.style.iconButtonWrapper, this.style.openExtraIconsButtonIconWrapper]}
-            onPress={() => extraAction || this.setState({ showExtraIcons: !showExtraIcons })}
+            // onPress={() => extraAction || this.setState({ showExtraIcons: !showExtraIcons })}
+            onPress={extraAction}
           >
             {actionIcon}
           </TouchableOpacity>
@@ -93,28 +104,67 @@ export default class Inputbars extends React.Component<Default, Props, State> {
     );
   }
 
+  renderPreview() {
+    const { imageSelected } = this.props;
+    const source = (imageSelected && (typeof imageSelected === 'string'))
+      ? { uri: `data:image/png;base64,${imageSelected}` }
+      : { uri: '' };
+
+    if (imageSelected !== '') {
+      return (
+        <View style={this.style.preview}>
+          <Image source={source} style={this.style.previewImage} />
+        </View>
+      );
+    }
+    return null;
+  }
+
+  textInput = null;
+
+  onImageSelectedfocusInput(nextProps: Object) {
+    const { imageSelected } = nextProps;
+    if (this.textInput && imageSelected !== '') this.textInput.focus();
+  }
+
   render() {
-    const { sendIcon, sendAction } = this.props;
+    const { sendIcon, sendAction, imageSelected } = this.props;
+
     return (
-      <View style={this.style.wrapper}>
-        { this.renderInputIcons() }
-        <TextInput
-          underlineColorAndroid='transparent'
-          style={this.style.input}
-          onChangeText={this.props.onChangeText}
-          value={this.props.text}
-          placeholder={'Escribe tu mensaje...'}
-          placeholderColor={'#797979'}
-        />
-        <TouchableOpacity style={[
-          this.style.iconButtonWrapper,
-          this.style.sendButtonIconWrapper,
-          this.props.showSend ? { width: 40 } : { width: 0 }]}
-          onPress={sendAction}
-        >
-          {sendIcon}
-        </TouchableOpacity>
-      </View>
+      <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={em(5.58)}>
+        <View>
+          { this.renderPreview() }
+          <View style={this.style.wrapper}>
+            { this.renderInputIcons() }
+            <TextInput
+              underlineColorAndroid='transparent'
+              style={this.style.input}
+              onChangeText={txt => this.setState({ text: txt })}
+              value={this.state.text}
+              placeholder={(imageSelected === '') ? 'Escribe tu mensaje...' : 'Añade un titulo...'}
+              autoFocus={imageSelected !== ''}
+              ref={(ref) => { this.textInput = ref; }}
+              withRef
+              placeholderColor={'#797979'}
+            />
+            {
+              this.state.text !== ''
+              ? (<TouchableOpacity
+                style={
+                [
+                  this.style.iconButtonWrapper,
+                  this.style.sendButtonIconWrapper,
+                ]
+              }
+                onPress={() => { sendAction(this.state.text, imageSelected); this.setState({ text: '' }); }}
+              >
+                {sendIcon}
+              </TouchableOpacity>)
+              : null
+            }
+          </View>
+        </View>
+      </KeyboardAvoidingView>
     );
   }
 }

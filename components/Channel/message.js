@@ -3,11 +3,13 @@ import * as React from 'react';
 import {
   Text,
   Image,
-  TouchableOpacity,
   View,
   ViewPropTypes,
+  TouchableWithoutFeedback,
 } from 'react-native';
-
+import moment from 'moment';
+import 'moment-timezone';
+import { openImageGallery } from '@expo/react-native-image-gallery';
 import SendIcon from '../../assets/svgSendIcon';
 import defaultStyle, { fallbackStyle } from '../../styles/message';
 import type { ChannelMessage, ChannelUser } from '../../flowTypes';
@@ -16,6 +18,7 @@ type Props = {
   myUserId: number | string,
   systemUserId: number | string,
   item: ChannelMessage,
+  list: Array<ChannelMessage>,
   user: ChannelUser,
   style?: ViewPropTypes.style,
 };
@@ -23,6 +26,25 @@ type Default = {
   style: ViewPropTypes.style,
 };
 type State = {};
+
+// const list = [
+//   {
+//     description: ':O hat etc',
+//     imageUrl: 'https://scontent-sea1-1.cdninstagram.com/t51.2885-15/s640x640/sh0.08/e35/14276382_1737295453196749_1335762274_n.jpg?ig_cache_key=MTMzNDMzMDE3NTk0MDQyMDQ4Ng%3D%3D.2',
+//   },
+//   {
+//     imageUrl: 'https://scontent-sea1-1.cdninstagram.com/t51.2885-15/e15/14448401_926765740761369_3613737894616760320_n.jpg?ig_cache_key=MTM0NDQ0OTEzNDI0OTIxMzgzNA%3D%3D.2',
+//     description: 'wood',
+//     width: 640,
+//     height: 640,
+//   },
+//   {
+//     imageUrl: 'https://scontent-sea1-1.cdninstagram.com/t51.2885-15/s640x640/sh0.08/e35/14272256_1576830565957175_619863550_n.jpg?ig_cache_key=MTMzOTMwNzg3OTc3NzI1MTQzMA%3D%3D.2',
+//     description: 'making beer etc',
+//     width: 640,
+//     height: 640,
+//   },
+// ];
 
 export default class Message extends React.PureComponent<Default, Props, State> {
   style: ViewPropTypes.style;
@@ -38,6 +60,28 @@ export default class Message extends React.PureComponent<Default, Props, State> 
       ...props.style,
     };
   }
+
+  openInImageGallery = () => {
+    const { item, list } = this.props;
+
+    const parseItem = {
+      imageUrl: item.attachmentUrl,
+      description: item.text,
+    };
+
+    const parseList = list
+      .filter(message => message.attachmentUrl !== '')
+      .map(message => ({
+        imageUrl: message.attachmentUrl,
+        description: message.text,
+      }))
+      .reverse();
+
+    openImageGallery({
+      list: parseList,
+      item: parseItem,
+    });
+  };
 
   /*
    * Function intended to render a single message from the list of messages pulled.
@@ -60,6 +104,8 @@ export default class Message extends React.PureComponent<Default, Props, State> 
    */
   renderMessageAsUser(item: ChannelMessage, isMine: boolean) {
     const { user: userData } = this.props;
+
+    const time = moment(item.date).subtract(6, 'hours').format('LT');
 
     return (
       <View style={[
@@ -90,11 +136,23 @@ export default class Message extends React.PureComponent<Default, Props, State> 
             this.style.messageBase,
             isMine ? this.style.messageFromMe : this.style.messageFromOther]}
         >
+          {
+            (item.attachmentUrl !== '')
+            ? (
+              <TouchableWithoutFeedback onPress={this.openInImageGallery}>
+                <Image source={{ uri: item.attachmentUrl }} style={{ height: 80 }} />
+              </TouchableWithoutFeedback>
+            )
+            : null
+          }
           <Text
             style={[this.style.textMessage, isMine ? this.style.userText : this.style.otherText]}
           >
             { item.text }
           </Text>
+          <View style={{ flex: 1, paddingTop: 8, flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+            <Text style={{ color: '#999', fontSize: 10 }}>{time}</Text>
+          </View>
         </View>
       </View>
     );

@@ -44,12 +44,15 @@ export type ChannelMessage = {
 export type ChannelStorePropTypes = {
   myUserId: number | string,
   systemUserId?: number | string,
+  messages?: Array<ChannelMessage>,
   inputbarStyle?: ViewPropTypes.style,
   style?: ViewPropTypes.style,
   actionIcon?: React.Node,
   sendIcon?: React.Node,
   messageStyle?: ViewPropTypes.style,
+  imageSelected?: string,
 };
 export type ChannelActionPropTypes = {
   extraAction?: Function,
+  onSend: Function,
 };

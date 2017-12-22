@@ -54,5 +54,10 @@
   "bugs": {
     "url": "https://github.com/grvty-labs/Conversations-ReactNative/issues"
   },
-  "homepage": "https://github.com/grvty-labs/Conversations-ReactNative#readme"
+  "homepage": "https://github.com/grvty-labs/Conversations-ReactNative#readme",
+  "dependencies": {
+    "@expo/react-native-image-gallery": "^2.2.0",
+    "moment": "^2.20.1",
+    "moment-timezone": "^0.5.14"
+  }
 }
