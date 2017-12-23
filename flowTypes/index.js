@@ -55,4 +55,5 @@ export type ChannelStorePropTypes = {
 export type ChannelActionPropTypes = {
   extraAction?: Function,
   onSend: Function,
+  onImageTap: Function,
 };

@@ -5,11 +5,10 @@ import {
   Image,
   View,
   ViewPropTypes,
-  TouchableWithoutFeedback,
+  TouchableOpacity,
 } from 'react-native';
 import moment from 'moment';
 import 'moment-timezone';
-import { openImageGallery } from '@expo/react-native-image-gallery';
 import SendIcon from '../../assets/svgSendIcon';
 import defaultStyle, { fallbackStyle } from '../../styles/message';
 import type { ChannelMessage, ChannelUser } from '../../flowTypes';
@@ -21,9 +20,11 @@ type Props = {
   list: Array<ChannelMessage>,
   user: ChannelUser,
   style?: ViewPropTypes.style,
+  onImageTap: Function,
 };
 type Default = {
   style: ViewPropTypes.style,
+  onImageTap: Function,
 };
 type State = {};
 
@@ -50,6 +51,7 @@ export default class Message extends React.PureComponent<Default, Props, State> 
   style: ViewPropTypes.style;
   static defaultProps: Default = {
     style: defaultStyle,
+    onImageTap: () => {},
   };
   constructor(props: Props) {
     super(props);
@@ -61,27 +63,7 @@ export default class Message extends React.PureComponent<Default, Props, State> 
     };
   }
 
-  openInImageGallery = () => {
-    const { item, list } = this.props;
-
-    const parseItem = {
-      imageUrl: item.attachmentUrl,
-      description: item.text,
-    };
-
-    const parseList = list
-      .filter(message => message.attachmentUrl !== '')
-      .map(message => ({
-        imageUrl: message.attachmentUrl,
-        description: message.text,
-      }))
-      .reverse();
-
-    openImageGallery({
-      list: parseList,
-      item: parseItem,
-    });
-  };
+  view = null;
 
   /*
    * Function intended to render a single message from the list of messages pulled.
@@ -103,7 +85,7 @@ export default class Message extends React.PureComponent<Default, Props, State> 
    * user, it will be rendered with a slightly different style.
    */
   renderMessageAsUser(item: ChannelMessage, isMine: boolean) {
-    const { user: userData } = this.props;
+    const { user: userData, onImageTap } = this.props;
 
     const time = moment(item.date).subtract(6, 'hours').format('LT');
 
@@ -139,9 +121,13 @@ export default class Message extends React.PureComponent<Default, Props, State> 
           {
             (item.attachmentUrl !== '')
             ? (
-              <TouchableWithoutFeedback onPress={this.openInImageGallery}>
-                <Image source={{ uri: item.attachmentUrl }} style={{ height: 80 }} />
-              </TouchableWithoutFeedback>
+              <TouchableOpacity onPress={() => onImageTap(item)}>
+                <Image
+                  ref={(view) => { this.view = view; }}
+                  source={{ uri: item.attachmentUrl }}
+                  style={{ height: 80, width: 80 }}
+                />
+              </TouchableOpacity>
             )
             : null
           }

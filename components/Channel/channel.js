@@ -11,7 +11,7 @@ import { getNameInitials, getNameColor } from '../../utils/userIconGenerator';
 import Inputbar from './inputbar';
 import Message from './message';
 import defaultStyle, { fallbackStyle } from '../../styles/Channel';
-import ImageGallery from '@expo/react-native-image-gallery';
+import ImageGallery, { openImageGallery } from '@expo/react-native-image-gallery';
 import type {
   ChannelStorePropTypes,
   ChannelActionPropTypes,
@@ -25,9 +25,9 @@ type Default = {
   style: ViewPropTypes.style;
 };
 type State = {
-  text: string,
   refreshing: boolean,
   messages: Array<ChannelMessage>,
+  imagesList: Array<Object>,
   users: {
     [userId: number | string]: ChannelUser,
   }
@@ -60,6 +60,7 @@ export default class Channel extends React.Component<Default, Props, State> {
 
   state: State = {
     messages: [],
+    imagesList: [],
     users: {},
     refreshing: false,
   };
@@ -69,6 +70,36 @@ export default class Channel extends React.Component<Default, Props, State> {
     this.fetchChannelMessages();
   }
   componentWillMount() {}
+
+  componentWillReceiveProps(nextProps: Object) {
+    const { messages } = nextProps;
+    if (messages) {
+      const imagesList = messages
+        .filter(message => message.attachmentUrl !== '')
+        .map(message => ({
+          imageUrl: message.attachmentUrl,
+          description: message.text,
+        }))
+        .reverse();
+      this.setState({ imagesList });
+    }
+  }
+
+  openInImageGallery = (message: ChannelMessage) => {
+    const { imagesList: list } = this.state;
+    const parseItem = {
+      imageUrl: message.attachmentUrl,
+      description: message.text,
+    };
+    list.forEach((item) => {
+      if (JSON.stringify(item) === JSON.stringify(parseItem)) {
+        openImageGallery({
+          list,
+          item,
+        });
+      }
+    });
+  };
 
   /*
    * Extract the item's key for the list render. The key must be a
@@ -180,6 +211,7 @@ export default class Channel extends React.Component<Default, Props, State> {
         item={item}
         list={messages}
         user={user}
+        onImageTap={(message) => { this.openInImageGallery(message); }}
       />
     );
   }
@@ -215,7 +247,7 @@ export default class Channel extends React.Component<Default, Props, State> {
 
           refreshing={this.state.refreshing}
 
-          ItemSeparatorComponent={this.renderSeparator}
+          // ItemSeparatorComponent={this.renderSeparator}
           ListFooterComponent={this.renderFooter}
           ListHeaderComponent={this.renderHeader}
 
