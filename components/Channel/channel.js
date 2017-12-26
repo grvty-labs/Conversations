@@ -5,8 +5,13 @@ import {
   FlatList,
   View,
   ViewPropTypes,
+  Keyboard,
+  Platform,
+  UIManager,
+  LayoutAnimation,
 } from 'react-native';
 
+import { em } from '../../styles';
 import { getNameInitials, getNameColor } from '../../utils/userIconGenerator';
 import Inputbar from './inputbar';
 import Message from './message';
@@ -30,7 +35,8 @@ type State = {
   imagesList: Array<Object>,
   users: {
     [userId: number | string]: ChannelUser,
-  }
+  },
+  keyboardHeight: number,
 };
 
 /**
@@ -52,10 +58,16 @@ export default class Channel extends React.Component<Default, Props, State> {
     (this: any).renderHeader = this.renderHeader.bind(this);
     (this: any).renderMessage = this.renderMessage.bind(this);
     (this: any).renderSeparator = this.renderSeparator.bind(this);
+    (this: any).keyboardDidShow = this.keyboardDidShow.bind(this);
+    (this: any).keyboardDidHide = this.keyboardDidHide.bind(this);
     this.style = {  // For flow and to prevent 'undefined key' issues
       ...fallbackStyle,
       ...props.style,
     };
+
+    if (Platform.OS === 'android') {
+      UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
   }
 
   state: State = {
@@ -63,13 +75,22 @@ export default class Channel extends React.Component<Default, Props, State> {
     imagesList: [],
     users: {},
     refreshing: false,
+    keyboardHeight: 0,
   };
 
   componentDidMount() {
     this.fetchChannelUsers();
     this.fetchChannelMessages();
   }
-  componentWillMount() {}
+  componentWillMount() {
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
+  }
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
 
   componentWillReceiveProps(nextProps: Object) {
     const { messages } = nextProps;
@@ -83,6 +104,20 @@ export default class Channel extends React.Component<Default, Props, State> {
         .reverse();
       this.setState({ imagesList });
     }
+  }
+
+  keyboardDidShow(e: any) {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    this.setState({
+      keyboardHeight: e.endCoordinates.height,
+    });
+  }
+
+  keyboardDidHide(e: any) {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    this.setState({
+      keyboardHeight: 0,
+    });
   }
 
   openInImageGallery = (message: ChannelMessage) => {
@@ -236,7 +271,7 @@ export default class Channel extends React.Component<Default, Props, State> {
     const { inputbarStyle, actionIcon, sendIcon,
       extraAction, messages, onSend, imageSelected } = this.props;
     return (
-      <View style={this.style.wrapper}>
+      <View style={[this.style.wrapper, Platform.OS === 'ios' ? { marginBottom: this.state.keyboardHeight } : null]}>
         <FlatList
           style={this.style.listWrapper}
           data={messages}

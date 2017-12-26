@@ -131,40 +131,38 @@ export default class Inputbars extends React.Component<Default, Props, State> {
     const { sendIcon, sendAction, imageSelected } = this.props;
 
     return (
-      <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={em(5.58)}>
-        <View>
-          { this.renderPreview() }
-          <View style={this.style.wrapper}>
-            { this.renderInputIcons() }
-            <TextInput
-              underlineColorAndroid='transparent'
-              style={this.style.input}
-              onChangeText={txt => this.setState({ text: txt })}
-              value={this.state.text}
-              placeholder={(imageSelected === '') ? 'Escribe tu mensaje...' : 'Añade un titulo...'}
-              autoFocus={imageSelected !== ''}
-              ref={(ref) => { this.textInput = ref; }}
-              withRef
-              placeholderColor={'#797979'}
-            />
-            {
-              this.state.text !== ''
-              ? (<TouchableOpacity
-                style={
-                [
-                  this.style.iconButtonWrapper,
-                  this.style.sendButtonIconWrapper,
-                ]
-              }
-                onPress={() => { sendAction(this.state.text, imageSelected); this.setState({ text: '' }); }}
-              >
-                {sendIcon}
-              </TouchableOpacity>)
-              : null
+      <View>
+        { this.renderPreview() }
+        <View style={this.style.wrapper}>
+          { this.renderInputIcons() }
+          <TextInput
+            underlineColorAndroid='transparent'
+            style={this.style.input}
+            onChangeText={txt => this.setState({ text: txt })}
+            value={this.state.text}
+            placeholder={(imageSelected === '') ? 'Escribe tu mensaje...' : 'Añade un titulo...'}
+            autoFocus={imageSelected !== ''}
+            ref={(ref) => { this.textInput = ref; }}
+            withRef
+            placeholderColor={'#797979'}
+          />
+          {
+            this.state.text !== ''
+            ? (<TouchableOpacity
+              style={
+              [
+                this.style.iconButtonWrapper,
+                this.style.sendButtonIconWrapper,
+              ]
             }
-          </View>
+              onPress={() => { sendAction(this.state.text, imageSelected); this.setState({ text: '' }); }}
+            >
+              {sendIcon}
+            </TouchableOpacity>)
+            : null
+          }
         </View>
-      </KeyboardAvoidingView>
+      </View>
     );
   }
 }
