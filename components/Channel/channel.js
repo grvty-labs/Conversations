@@ -230,7 +230,8 @@ export default class Channel extends React.Component<Default, Props, State> {
    * and the users' messages as separated and clean as possible.
    */
   renderMessage(itemData: { item: ChannelMessage }) {
-    const { myUserId, systemUserId, messageStyle, messages } = this.props;
+    const { myUserId, systemUserId, messageStyle,
+      messages, myUserImage, otherUserImage } = this.props;
     const item = itemData.item;
     const user = this.state.users[item.userId] || {
       userId: 0,
@@ -240,6 +241,8 @@ export default class Channel extends React.Component<Default, Props, State> {
     };
     return (
       <Message
+        myUserImage={myUserImage}
+        otherUserImage={otherUserImage}
         style={messageStyle}
         myUserId={myUserId}
         systemUserId={systemUserId}

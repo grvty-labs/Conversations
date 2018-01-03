@@ -42,6 +42,8 @@ export type ChannelMessage = {
 };
 
 export type ChannelStorePropTypes = {
+  myUserImage: string,
+  otherUserImage: string,
   myUserId: number | string,
   systemUserId?: number | string,
   messages?: Array<ChannelMessage>,

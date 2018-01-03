@@ -85,9 +85,14 @@ export default class Message extends React.PureComponent<Default, Props, State> 
    * user, it will be rendered with a slightly different style.
    */
   renderMessageAsUser(item: ChannelMessage, isMine: boolean) {
-    const { user: userData, onImageTap } = this.props;
+    const { user: userData, onImageTap, myUserImage, otherUserImage } = this.props;
 
     const time = moment(item.date).subtract(6, 'hours').format('LT');
+
+    let source = (typeof otherUserImage === 'number') ? otherUserImage : { uri: otherUserImage };
+    if (isMine) {
+      source = (typeof myUserImage === 'number') ? myUserImage : { uri: myUserImage };
+    }
 
     return (
       <View style={[
@@ -96,23 +101,10 @@ export default class Message extends React.PureComponent<Default, Props, State> 
           ? this.style.messageRowRight
           : this.style.messageRowLeft]}
       >
-        { userData.imageUrl
-          ? (
-            <Image
-              style={this.style.userIcon}
-              source={{ uri: userData.imageUrl }}
-            />
-          )
-          : (
-            <Text style={[
-              this.style.userIcon,
-              this.style.userIconText,
-              { backgroundColor: userData.color }]}
-            >
-              { userData.initials }
-            </Text>
-          )
-        }
+        <Image
+          style={this.style.userIcon}
+          source={source}
+        />
         <View
           style={[
             this.style.messageBase,
@@ -124,7 +116,7 @@ export default class Message extends React.PureComponent<Default, Props, State> 
               <TouchableOpacity onPress={() => onImageTap(item)}>
                 <Image
                   ref={(view) => { this.view = view; }}
-                  source={{ uri: item.attachmentUrl }}
+                  source={source}
                   style={{ height: 80, width: 80 }}
                 />
               </TouchableOpacity>
