@@ -16,7 +16,7 @@ import { getNameInitials, getNameColor } from '../../utils/userIconGenerator';
 import Inputbar from './inputbar';
 import Message from './message';
 import defaultStyle, { fallbackStyle } from '../../styles/Channel';
-import ImageGallery, { openImageGallery } from '@expo/react-native-image-gallery';
+// import ImageGallery, { openImageGallery } from '@expo/react-native-image-gallery';
 import type {
   ChannelStorePropTypes,
   ChannelActionPropTypes,
@@ -298,7 +298,7 @@ export default class Channel extends React.Component<Default, Props, State> {
           sendAction={onSend}
           imageSelected={imageSelected}
         />
-        <ImageGallery />
+        {/* <ImageGallery /> */}
       </View>
     );
   }

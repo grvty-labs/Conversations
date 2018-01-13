@@ -1,6 +1,9 @@
 // @flow
 import * as React from 'react';
-import { Svg } from 'expo';
+import Svg, {
+    G,
+    Polygon,
+} from 'react-native-svg';
 
 type SvgType = {
   // The fill prop refers to the color inside the shape.
@@ -50,29 +53,29 @@ export default class ArrowRight extends React.Component<Default, SvgType, void> 
         height='16'
         {...this.props}
       >
-        <Svg.G
+        <G
           stroke='none'
           strokeWidth={1.0}
           fill='none'
           fillRule='evenodd'
         >
-          <Svg.G
+          <G
             x='-385.000000'
             y='-123.000000'
             fillRule='nonzero'
             fill={fill}
           >
-            <Svg.G
+            <G
               x='385.000000'
               y='123.000000'
             >
-              <Svg.Polygon
+              <Polygon
                 id='Shape'
                 points='0,7 0,9 12,9 6.5,14.5 7.92,15.92 15.84,8 7.92,0.08 6.5,1.5 12,7'
               />
-            </Svg.G>
-          </Svg.G>
-        </Svg.G>
+            </G>
+          </G>
+        </G>
       </Svg>
     );
   }
