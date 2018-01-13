@@ -116,7 +116,7 @@ export default class Message extends React.PureComponent<Default, Props, State> 
               <TouchableOpacity onPress={() => onImageTap(item)}>
                 <Image
                   ref={(view) => { this.view = view; }}
-                  source={source}
+                  source={{ uri: item.attachmentUrl }}
                   style={{ height: 80, width: 80 }}
                 />
               </TouchableOpacity>
