@@ -101,15 +101,35 @@ export default class Message extends React.PureComponent<Default, Props, State> 
           ? this.style.messageRowRight
           : this.style.messageRowLeft]}
       >
-        <Image
-          style={this.style.userIcon}
-          source={source}
-        />
+        {
+          item.profileImage
+          ? <Image
+            style={this.style.userIcon}
+            source={item.profileImage}
+          />
+          : <Image
+            style={this.style.userIcon}
+            source={source}
+          />
+        }
         <View
           style={[
             this.style.messageBase,
             isMine ? this.style.messageFromMe : this.style.messageFromOther]}
         >
+          {
+            item.name && !isMine
+            ? <Text
+              style={[
+                this.style.textMessage,
+                isMine ? this.style.userText : this.style.otherText,
+                { color: '#787878' }
+              ]}
+            >
+              { item.name }
+            </Text>
+            : null
+          }
           {
             (item.attachmentUrl !== '')
             ? (
