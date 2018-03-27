@@ -87,7 +87,7 @@ export default class Message extends React.PureComponent<Default, Props, State> 
   renderMessageAsUser(item: ChannelMessage, isMine: boolean) {
     const { user: userData, onImageTap, myUserImage, otherUserImage } = this.props;
 
-    const time = moment(item.date).subtract(6, 'hours').format('LT');
+    const time = moment(item.date).format('LT');
 
     let source = (typeof otherUserImage === 'number') ? otherUserImage : { uri: otherUserImage };
     if (isMine) {
